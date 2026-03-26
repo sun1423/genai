@@ -13,11 +13,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/analyze', async (req, res) => {
-    const { username, password, text } = req.body;
+    const { text } = req.body;
 
-    // Server-side credential validation
-    if (username !== process.env.UI_USERNAME || password !== process.env.UI_PASSWORD) {
-        return res.status(401).json({ error: "Unauthorized: Invalid Credentials" });
+    if (!text) {
+        return res.status(400).json({ error: "No text provided" });
     }
 
     try {
@@ -32,7 +31,7 @@ app.post('/api/analyze', async (req, res) => {
         });
         res.json(response.data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "OpenRouter Error: " + error.message });
     }
 });
 
