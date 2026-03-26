@@ -10,7 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-/* Login Screen - Ensure it shows by default */
+/* Login Screen */
 .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200;}
 .login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:36px;width:380px;box-shadow:0 8px 32px rgba(26,35,50,.12);}
 .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
@@ -24,29 +24,21 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 .login-err{font-size:11px;color:var(--red);margin-top:8px;display:none;}
 .login-err.show{display:block;}
 
-/* Header & UI */
+/* Header & Sidebar */
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
 .dot.on{background:var(--green);box-shadow:0 0 5px var(--green);}
 .dot.checking{background:var(--yellow);}
-
-/* Layout */
 .layout{display:flex;flex:1;overflow:hidden;}
-.lpanel{width:228px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.lpanel{width:228px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:15px;}
 .mchat{flex:1;display:flex;flex-direction:column;background:#fff;}
 .msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
 
-/* Modal - HIGHER Z-INDEX */
+/* Modals */
 .ovl{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .ovl.open{display:flex;}
 .modal{background:var(--bg2);border-radius:14px;padding:24px;width:420px;box-shadow:0 4px 24px rgba(0,0,0,0.2);}
-.notice{font-size:11px;padding:8px;margin-top:10px;border-radius:4px;display:none;}
-.notice.err{background:#fee2e2;color:#b91c1c;display:block;}
-.notice.ok{background:#dcfce7;color:#15803d;display:block;}
-
-.btn-ok{background:var(--blue);color:#fff;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;}
-.btn-x{background:transparent;border:1px solid var(--border2);padding:8px 16px;border-radius:6px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -54,12 +46,12 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <div class="login-logo"><div class="login-icon">&#x1F916;</div><div class="login-title">AI <span>DevOps</span></div></div>
-    <div class="lf"><label>Username</label><input type="text" id="loginUser" value="admin"></div>
-    <div class="lf"><label>Password</label><input type="password" id="loginPass" value="admin"></div>
+    <div class="lf"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username"></div>
+    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" onclick="doLogin()">Sign In &rarr;</button>
     <div style="margin-top:15px; text-align:center; font-size:11px;">
-      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline; font-weight:700;">&#9881; Configure Backend URL</span>
+      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline;">&#9881; Set backend URL</span>
     </div>
   </div>
 </div>
@@ -67,17 +59,19 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 <div id="mainApp" style="display:none;flex-direction:column;height:100vh;">
   <div class="hdr">
     <div style="font-weight:800;">AI DevOps Agent</div>
-    <div class="hdr-r" style="display:flex; gap:10px; align-items:center;">
+    <div style="display:flex; gap:10px; align-items:center;">
       <div class="status-pill"><div class="dot" id="dot"></div><span id="stxt">Offline</span></div>
-      <button onclick="openModal()" style="cursor:pointer; background:none; border:none; font-size:16px;">&#9881;</button>
-      <button onclick="location.reload()" style="cursor:pointer; background:none; border:none; font-size:16px;">&#x21BB;</button>
+      <button onclick="doLogout()" style="cursor:pointer; background:none; border:none;">Logout</button>
     </div>
   </div>
   <div class="layout">
-    <div class="lpanel"></div>
+    <div class="lpanel">
+        <div style="font-size:10px; color:var(--text2); letter-spacing:1px; margin-bottom:10px;">HISTORY</div>
+        <div id="histList"></div>
+    </div>
     <div class="mchat">
         <div class="msgs" id="msgs">
-            <div style="padding:40px; text-align:center; color:var(--text2);">Connected to Backend. Ready for commands.</div>
+            <div style="padding:40px; text-align:center; color:var(--text2);">Ready for commands.</div>
         </div>
     </div>
   </div>
@@ -86,33 +80,32 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 <div class="ovl" id="ovl">
   <div class="modal">
     <h3>Backend Configuration</h3>
-    <p style="font-size:12px; margin:10px 0;">Enter your https ngrok URL.</p>
-    <div class="lf">
-      <label>Ngrok URL</label>
-      <input type="text" id="backendUrl" placeholder="https://your-id.ngrok-free.app">
+    <div class="lf" style="margin-top:15px;">
+      <label>Ngrok/Backend URL</label>
+      <input type="text" id="backendUrl">
     </div>
     <div id="cfgNotice"></div>
     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-      <button class="btn-x" onclick="closeModal()">Cancel</button>
-      <button class="btn-ok" onclick="saveUrl()">Save & Connect</button>
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="saveUrl()" style="background:var(--blue); color:white; border:none; padding:5px 15px; border-radius:4px;">Save</button>
     </div>
   </div>
 </div>
 
 <script>
 var BACKEND = localStorage.getItem('agent_backend') || '';
+var AUTH_TOKEN = localStorage.getItem('agent_token') || '';
 var HDR = { 'ngrok-skip-browser-warning': 'true' };
 
-// 1. Initialize immediately
 function init() {
     document.getElementById('backendUrl').value = BACKEND;
-    
-    // Always show login screen on start to prevent blank screen
-    document.getElementById('loginScreen').style.display = 'flex';
-    document.getElementById('mainApp').style.display = 'none';
-
-    if (BACKEND) {
-        checkHealth();
+    if (AUTH_TOKEN) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'flex';
+        if (BACKEND) checkHealth();
+    } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
     }
 }
 
@@ -131,8 +124,41 @@ function checkHealth() {
         .catch(e => {
             dot.className = 'dot';
             txt.textContent = 'Offline';
-            console.log("Health check failed. Check ngrok URL.");
         });
+}
+
+function doLogin() {
+    var u = document.getElementById('loginUser').value;
+    var p = document.getElementById('loginPass').value;
+    var err = document.getElementById('loginErr');
+
+    // Restore attempt to hit backend auth while keeping admin/admin fallback
+    fetch(BACKEND + '/auth/login', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json', ...HDR }, 
+        body: JSON.stringify({ username: u, password: p }) 
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.success || d.token || (u === 'admin' && p === 'admin')) {
+            AUTH_TOKEN = d.token || 'admin-session';
+            localStorage.setItem('agent_token', AUTH_TOKEN);
+            init();
+        } else {
+            err.textContent = 'Invalid credentials';
+            err.className = 'login-err show';
+        }
+    })
+    .catch(e => {
+        if (u === 'admin' && p === 'admin') {
+            AUTH_TOKEN = 'admin-session';
+            localStorage.setItem('agent_token', AUTH_TOKEN);
+            init();
+        } else {
+            err.textContent = 'Backend unreachable. Try admin/admin.';
+            err.className = 'login-err show';
+        }
+    });
 }
 
 function openModal() { document.getElementById('ovl').classList.add('open'); }
@@ -140,44 +166,20 @@ function closeModal() { document.getElementById('ovl').classList.remove('open');
 
 function saveUrl() {
     var url = document.getElementById('backendUrl').value.trim().replace(/\/$/, '');
-    var n = document.getElementById('cfgNotice');
-    
-    if (!url.startsWith('http')) {
-        url = 'https://' + url;
-    }
-
-    n.className = 'notice ok';
-    n.textContent = 'Testing connection...';
-
-    fetch(url + '/health', { headers: HDR })
-        .then(r => r.json())
-        .then(d => {
-            BACKEND = url;
-            localStorage.setItem('agent_backend', url);
-            n.textContent = 'Connected successfully!';
-            checkHealth();
-            setTimeout(closeModal, 1000);
-        })
-        .catch(e => {
-            n.className = 'notice err';
-            n.textContent = 'Could not connect. Ensure ngrok is running and URL is correct.';
-        });
-}
-
-function doLogin() {
-    var u = document.getElementById('loginUser').value;
-    var p = document.getElementById('loginPass').value;
-    if (u === 'admin' && p === 'admin') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-    } else {
-        var err = document.getElementById('loginErr');
-        err.textContent = 'Invalid username/password (default: admin/admin)';
-        err.className = 'login-err show';
+    if (url) {
+        BACKEND = url;
+        localStorage.setItem('agent_backend', url);
+        checkHealth();
+        closeModal();
     }
 }
 
-init();
+function doLogout() {
+    localStorage.removeItem('agent_token');
+    location.reload();
+}
+
+window.onload = init;
 </script>
 </body>
 </html>
