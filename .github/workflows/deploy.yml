@@ -28,6 +28,41 @@ jobs:
           password: ${{ secrets.VM_PASSWORD }}
           script: |
             cd ~/ai-app
+            # Only need the API Key and Port now
+            echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
+            echo "PORT=3000" >> .env
+            
+            npm install --production
+            pm2 restart ai-server --update-env || pm2 start server.js --name "ai-server"name: Production Proxy Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Copy Files to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          source: "server.js,index.html,package.json"
+          target: "~/ai-app"
+
+      - name: Inject Secrets and Start
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          script: |
+            cd ~/ai-app
             
             # Create .env from GitHub Secrets
             echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
