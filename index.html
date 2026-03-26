@@ -203,9 +203,12 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
     <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password" onkeydown="loginKey(event)" /></div>
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" onclick="doLogin()">Sign In &rarr;</button>
-    <div style="margin-top:12px;font-size:10px;color:var(--text2);text-align:center">
+    <!-- <div style="margin-top:12px;font-size:10px;color:var(--text2);text-align:center">
       &#9881; <a href="#" onclick="openModal();return false;" style="color:var(--blue)">Set backend URL</a> first if not connected
-    </div>
+    </div> -->
+    <p style="font-size:11px;color:var(--text2)">
+  Click <a href="javascript:void(0)" onclick="openModal()" style="color:var(--blue); font-weight:700; text-decoration:none; cursor:pointer;">&#9881; Backend URL</a> to connect your backend first
+</p>
   </div>
 </div>
 
