@@ -1,34 +1,28 @@
-name: Deploy to VM
-
-on:
-  push:
-    branches: [ main ] # Triggered whenever you push to main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: SSH and Setup
+- name: SSH and Setup
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_IP }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
           script: |
-            # 1. Enter app directory (change this to your path)
-            mkdir -p ~/ai-app && cd ~/ai-app
-            
-            # 2. Sync files (if first time, you might need to git clone)
-            # For simplicity, we assume the code is already there or managed via git
-            
-            # 3. Create/Update the hidden .env file with your API key
+            # 1. Create directory if it doesn't exist
+            mkdir -p ~/ai-app
+            cd ~/ai-app
+
+            # 2. Initialize git if not already there, otherwise pull latest
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              git pull origin main
+            fi
+
+            # 3. Create/Update the secret .env file
             echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
-            
-            # 4. Install dependencies and start/restart the server
+            echo "PORT=3000" >> .env
+
+            # 4. Install dependencies (now it will find package.json)
             npm install
-            # Use PM2 to keep the process alive after you logout
-            sudo npm install -g pm2
-            pm2 restart ai-server || pm2 start server.js --name "ai-server"
+
+            # 5. Start or Restart with PM2
+            # Use --update-env to ensure the new OPENROUTER_KEY is loaded
+            pm2 restart ai-server --update-env || pm2 start server.js --name "ai-server"
