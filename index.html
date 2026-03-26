@@ -10,7 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-/* Login Screen */
+/* Login */
 .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200;}
 .login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:36px;width:380px;box-shadow:0 8px 32px rgba(26,35,50,.12);}
 .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
@@ -21,57 +21,78 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 .lf label{display:block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:5px;}
 .lf input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 12px;border-radius:7px;outline:none;}
 .login-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;padding:12px;border-radius:7px;cursor:pointer;margin-top:8px;}
-.login-err{font-size:11px;color:var(--red);margin-top:8px;display:none;}
+.login-err{font-size:11px;color:var(--red);margin-top:8px;display:none;padding:8px;background:rgba(217,48,37,0.05);border-radius:4px;}
 .login-err.show{display:block;}
 
-/* Header & Sidebar */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+/* Main UI */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);box-shadow:var(--sh);flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:9px;}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;}
 .status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
 .dot.on{background:var(--green);box-shadow:0 0 5px var(--green);}
-.dot.checking{background:var(--yellow);}
-.layout{display:flex;flex:1;overflow:hidden;}
-.lpanel{width:228px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:15px;}
-.mchat{flex:1;display:flex;flex-direction:column;background:#fff;}
-.msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.dot.checking{background:var(--yellow);animation:pulse 1s infinite;}
+@keyframes pulse{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
 
-/* Modals */
-.ovl{position:fixed;inset:0;background:rgba(26,35,50,.5);z-index:400;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.lpanel{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.psec{padding:15px;border-bottom:1px solid var(--border);}
+.plbl{font-size:9px;letter-spacing:1px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;}
+.pi-item{padding:8px;font-size:12px;cursor:pointer;border-radius:6px;margin-bottom:2px;transition:0.2s;}
+.pi-item:hover{background:var(--bg3);}
+
+.mchat{flex:1;display:flex;flex-direction:column;background:#fff;}
+.msgs{flex:1;overflow-y:auto;padding:20px;}
+
+/* Modal - Set Z-INDEX high to ensure it shows over login */
+.ovl{position:fixed;inset:0;background:rgba(26,35,50,0.6);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .ovl.open{display:flex;}
-.modal{background:var(--bg2);border-radius:14px;padding:24px;width:420px;box-shadow:0 4px 24px rgba(0,0,0,0.2);}
+.modal{background:var(--bg2);border-radius:14px;padding:24px;width:400px;box-shadow:0 10px 40px rgba(0,0,0,0.2);}
 </style>
 </head>
 <body>
 
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
-    <div class="login-logo"><div class="login-icon">&#x1F916;</div><div class="login-title">AI <span>DevOps</span></div></div>
-    <div class="lf"><label>Username</label><input type="text" id="loginUser" placeholder="Enter username"></div>
-    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Enter password"></div>
+    <div class="login-logo"><div class="login-icon">&#x1F916;</div><div class="login-title">AI <span>DevOps</span> Agent</div></div>
+    <div class="lf"><label>Username</label><input type="text" id="loginUser" placeholder="Username"></div>
+    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="Password"></div>
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" onclick="doLogin()">Sign In &rarr;</button>
     <div style="margin-top:15px; text-align:center; font-size:11px;">
-      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline;">&#9881; Set backend URL</span>
+      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline; font-weight:700;">&#9881; Set Backend URL</span>
     </div>
   </div>
 </div>
 
 <div id="mainApp" style="display:none;flex-direction:column;height:100vh;">
   <div class="hdr">
-    <div style="font-weight:800;">AI DevOps Agent</div>
-    <div style="display:flex; gap:10px; align-items:center;">
+    <div class="logo">
+      <div class="logo-icon">&#x1F916;</div>
+      <div class="logo-name">AI <em>DevOps</em></div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center;">
       <div class="status-pill"><div class="dot" id="dot"></div><span id="stxt">Offline</span></div>
-      <button onclick="doLogout()" style="cursor:pointer; background:none; border:none;">Logout</button>
+      <button onclick="openModal()" style="cursor:pointer; background:none; border:none; font-size:16px;">&#x2699;</button>
+      <button onclick="doLogout()" style="cursor:pointer; color:var(--red); background:none; border:none; font-weight:700;">Logout</button>
     </div>
   </div>
   <div class="layout">
     <div class="lpanel">
-        <div style="font-size:10px; color:var(--text2); letter-spacing:1px; margin-bottom:10px;">HISTORY</div>
-        <div id="histList"></div>
+        <div class="psec">
+            <div class="plbl">Quick Tasks</div>
+            <div class="pi-item" onclick="alert('Ready')">Docker Status</div>
+            <div class="pi-item" onclick="alert('Ready')">System Health</div>
+        </div>
+        <div style="padding:15px;"><div class="plbl">History</div><div id="histList"></div></div>
     </div>
     <div class="mchat">
         <div class="msgs" id="msgs">
-            <div style="padding:40px; text-align:center; color:var(--text2);">Ready for commands.</div>
+            <div style="padding:40px; text-align:center;">
+                <h2 style="margin-bottom:10px;">Welcome back.</h2>
+                <p style="color:var(--text2); font-size:13px;">Backend: <span id="displayUrl">Not Set</span></p>
+            </div>
         </div>
     </div>
   </div>
@@ -79,15 +100,15 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 
 <div class="ovl" id="ovl">
   <div class="modal">
-    <h3>Backend Configuration</h3>
+    <h3>Configuration</h3>
     <div class="lf" style="margin-top:15px;">
-      <label>Ngrok/Backend URL</label>
-      <input type="text" id="backendUrl">
+      <label>Ngrok URL</label>
+      <input type="text" id="backendUrl" placeholder="https://....ngrok-free.app">
     </div>
     <div id="cfgNotice"></div>
     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-      <button onclick="closeModal()">Cancel</button>
-      <button onclick="saveUrl()" style="background:var(--blue); color:white; border:none; padding:5px 15px; border-radius:4px;">Save</button>
+      <button onclick="closeModal()" style="padding:8px 15px; border:1px solid var(--border); border-radius:6px; cursor:pointer;">Cancel</button>
+      <button onclick="saveUrl()" style="background:var(--blue); color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer;">Save & Test</button>
     </div>
   </div>
 </div>
@@ -98,20 +119,33 @@ var AUTH_TOKEN = localStorage.getItem('agent_token') || '';
 var HDR = { 'ngrok-skip-browser-warning': 'true' };
 
 function init() {
-    document.getElementById('backendUrl').value = BACKEND;
-    if (AUTH_TOKEN) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-        if (BACKEND) checkHealth();
-    } else {
+    try {
+        document.getElementById('backendUrl').value = BACKEND;
+        document.getElementById('displayUrl').textContent = BACKEND || 'None';
+
+        if (AUTH_TOKEN) {
+            // STEP 1: SHOW THE APP FIRST
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            
+            // STEP 2: CHECK HEALTH SECOND (Doesn't block the UI)
+            if (BACKEND) checkHealth();
+        } else {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+    } catch (e) {
+        console.error("Init failed:", e);
+        // Fallback: make sure at least the login screen is visible
         document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
     }
 }
 
 function checkHealth() {
-    var dot = document.getElementById('dot');
-    var txt = document.getElementById('stxt');
+    const dot = document.getElementById('dot');
+    const txt = document.getElementById('stxt');
+    if(!dot) return;
+
     dot.className = 'dot checking';
     txt.textContent = 'Connecting...';
 
@@ -124,15 +158,23 @@ function checkHealth() {
         .catch(e => {
             dot.className = 'dot';
             txt.textContent = 'Offline';
+            console.log("Health check failed - common with ngrok sleep.");
         });
 }
 
 function doLogin() {
-    var u = document.getElementById('loginUser').value;
-    var p = document.getElementById('loginPass').value;
-    var err = document.getElementById('loginErr');
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginErr');
 
-    // Restore attempt to hit backend auth while keeping admin/admin fallback
+    if (u === 'admin' && p === 'admin') {
+        AUTH_TOKEN = 'admin-session';
+        localStorage.setItem('agent_token', AUTH_TOKEN);
+        init();
+        return;
+    }
+
+    // Attempt backend login
     fetch(BACKEND + '/auth/login', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json', ...HDR }, 
@@ -140,9 +182,9 @@ function doLogin() {
     })
     .then(r => r.json())
     .then(d => {
-        if (d.success || d.token || (u === 'admin' && p === 'admin')) {
-            AUTH_TOKEN = d.token || 'admin-session';
-            localStorage.setItem('agent_token', AUTH_TOKEN);
+        if (d.success || d.token) {
+            AUTH_TOKEN = d.token;
+            localStorage.setItem('agent_token', d.token);
             init();
         } else {
             err.textContent = 'Invalid credentials';
@@ -150,34 +192,29 @@ function doLogin() {
         }
     })
     .catch(e => {
-        if (u === 'admin' && p === 'admin') {
-            AUTH_TOKEN = 'admin-session';
-            localStorage.setItem('agent_token', AUTH_TOKEN);
-            init();
-        } else {
-            err.textContent = 'Backend unreachable. Try admin/admin.';
-            err.className = 'login-err show';
-        }
+        err.textContent = 'Backend unreachable. Try admin/admin for offline mode.';
+        err.className = 'login-err show';
     });
 }
 
-function openModal() { document.getElementById('ovl').classList.add('open'); }
-function closeModal() { document.getElementById('ovl').classList.remove('open'); }
-
 function saveUrl() {
     var url = document.getElementById('backendUrl').value.trim().replace(/\/$/, '');
-    if (url) {
-        BACKEND = url;
-        localStorage.setItem('agent_backend', url);
-        checkHealth();
-        closeModal();
-    }
+    if (!url.startsWith('http')) url = 'https://' + url;
+    
+    BACKEND = url;
+    localStorage.setItem('agent_backend', url);
+    document.getElementById('displayUrl').textContent = url;
+    checkHealth();
+    closeModal();
 }
 
 function doLogout() {
     localStorage.removeItem('agent_token');
     location.reload();
 }
+
+function openModal() { document.getElementById('ovl').classList.add('open'); }
+function closeModal() { document.getElementById('ovl').classList.remove('open'); }
 
 window.onload = init;
 </script>
