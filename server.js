@@ -15,9 +15,7 @@ app.get('/', (req, res) => {
 app.post('/api/analyze', async (req, res) => {
     const { text } = req.body;
 
-    if (!text) {
-        return res.status(400).json({ error: "No text provided" });
-    }
+    if (!text) return res.status(400).json({ error: "No text provided" });
 
     try {
         const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
@@ -26,12 +24,17 @@ app.post('/api/analyze', async (req, res) => {
         }, {
             headers: {
                 'Authorization': `Bearer ${process.env.OPENROUTER_KEY}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                // OpenRouter specific headers (Required for some keys)
+                'HTTP-Referer': 'http://localhost:3000', 
+                'X-Title': 'VM AI Proxy'
             }
         });
         res.json(response.data);
     } catch (error) {
-        res.status(500).json({ error: "OpenRouter Error: " + error.message });
+        // Log the actual error response from OpenRouter to your VM console
+        console.error("OpenRouter Error Details:", error.response ? error.response.data : error.message);
+        res.status(500).json({ error: "OpenRouter Error: " + (error.response?.data?.error?.message || error.message) });
     }
 });
 
