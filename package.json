@@ -1,6 +1,7 @@
 {
-  "name": "ai-proxy-server",
+  "name": "ai-proxy-vm",
   "version": "1.0.0",
+  "description": "Secure OpenRouter Proxy",
   "main": "server.js",
   "dependencies": {
     "axios": "^1.6.0",
