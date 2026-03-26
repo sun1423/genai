@@ -1,5 +1,51 @@
 const express = require('express');
 const axios = require('axios');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+app.use(express.json());
+
+const PORT = process.env.PORT || 3000;
+
+// Serve the UI
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.post('/api/analyze', async (req, res) => {
+    const { text } = req.body;
+
+    if (!text) return res.status(400).json({ error: "No text provided" });
+
+    try {
+        const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+            model: 'google/gemini-2.0-flash-001',
+            messages: [{ role: 'user', content: text }]
+        }, {
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENROUTER_KEY}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'http://localhost:3000', // Required by some OpenRouter models
+                'X-Title': 'VM AI Proxy'
+            }
+        });
+
+        // Extracting only the human-readable text
+        const cleanText = response.data.choices[0].message.content;
+        res.json({ result: cleanText });
+
+    } catch (error) {
+        const errorDetails = error.response?.data?.error?.message || error.message;
+        console.error("OpenRouter Error:", errorDetails);
+        res.status(500).json({ error: "OpenRouter Error: " + errorDetails });
+    }
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});const express = require('express');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
