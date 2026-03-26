@@ -10,7 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-/* Login Screen */
+/* Login */
 .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:200;}
 .login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:36px;width:380px;box-shadow:0 8px 32px rgba(26,35,50,.12);}
 .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
@@ -23,7 +23,7 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 .login-btn{width:100%;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;padding:12px;border-radius:7px;cursor:pointer;margin-top:8px;}
 .login-err{font-size:11px;color:var(--red);margin-top:8px;display:none;padding:8px;background:rgba(217,48,37,0.05);border-radius:4px;}
 
-/* Header */
+/* App Layout */
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .status-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);background:var(--bg3);padding:4px 10px;border-radius:20px;}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--red);}
@@ -31,36 +31,37 @@ body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--tex
 .dot.checking{background:var(--yellow);animation:pulse 1s infinite;}
 @keyframes pulse{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
 
-/* Layout */
 .layout{display:flex;flex:1;overflow:hidden;}
 .lpanel{width:240px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
 .psec{padding:15px;border-bottom:1px solid var(--border);}
 .plbl{font-size:9px;letter-spacing:1px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;}
-.pi-item{padding:8px;font-size:12px;cursor:pointer;border-radius:6px;margin-bottom:2px;transition:0.2s;}
+.pi-item{padding:8px;font-size:11px;cursor:pointer;border-radius:6px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pi-item:hover{background:var(--bg3);color:var(--blue);}
 
-/* Chat Area */
-.mchat{flex:1;display:flex;flex-direction:column;background:#fff;position:relative;}
+.mchat{flex:1;display:flex;flex-direction:column;background:#fff;}
 .msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:15px;}
-.msg{display:flex;gap:12px;margin-bottom:10px;max-width:85%;}
-.msg.user{align-self:flex-end;flex-direction:row-reverse;}
-.bbl{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5;position:relative;}
+
+/* Messages */
+.msg{display:flex;flex-direction:column;max-width:85%;margin-bottom:10px;}
+.msg.user{align-self:flex-end;}
+.msg.agent{align-self:flex-start;}
+.bbl{padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5;}
 .msg.user .bbl{background:var(--blue);color:#fff;border-bottom-right-radius:2px;}
 .msg.agent .bbl{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:2px;}
-pre{background:#1a2332;color:#fff;padding:10px;border-radius:6px;margin:8px 0;overflow-x:auto;font-size:12px;}
-code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.05);padding:2px 4px;border-radius:4px;}
 
-/* Input Box */
+/* Execution Button */
+.exe-btn{margin-top:10px;background:var(--green);color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700;font-family:inherit;font-size:12px;}
+pre{background:#1a2332;color:#eee;padding:12px;border-radius:8px;margin:10px 0;font-size:12px;overflow-x:auto;}
+
+/* Input Area */
 .inp-area{padding:20px;background:var(--bg2);border-top:1px solid var(--border);}
 .inp-wrap{display:flex;gap:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;align-items:flex-end;}
-#ui{flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:14px;padding:8px 0;resize:none;max-height:200px;line-height:1.4;}
-.snd-btn{background:var(--blue);color:white;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.2s;}
-.snd-btn:hover{transform:scale(1.05);background:var(--purple);}
+#ui{flex:1;background:transparent;border:none;outline:none;font-family:inherit;font-size:14px;padding:8px 0;resize:none;max-height:180px;}
+.snd-btn{background:var(--blue);color:white;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
-/* Settings Modal */
 .ovl{position:fixed;inset:0;background:rgba(26,35,50,0.6);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .ovl.open{display:flex;}
-.modal{background:var(--bg2);border-radius:16px;padding:24px;width:400px;box-shadow:0 20px 50px rgba(0,0,0,0.3);}
+.modal{background:var(--bg2);border-radius:16px;padding:24px;width:400px;}
 </style>
 </head>
 <body>
@@ -68,34 +69,33 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.05);padding:
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <div class="login-logo"><div class="login-icon" style="color:white">&#x1F916;</div><div class="login-title">AI <span>DevOps</span></div></div>
-    <div class="lf"><label>Username</label><input type="text" id="loginUser" placeholder="admin"></div>
-    <div class="lf"><label>Password</label><input type="password" id="loginPass" placeholder="admin"></div>
+    <div class="lf"><label>Username</label><input type="text" id="loginUser" value="admin"></div>
+    <div class="lf"><label>Password</label><input type="password" id="loginPass" value="admin"></div>
     <div class="login-err" id="loginErr"></div>
     <button class="login-btn" onclick="doLogin()">Sign In &rarr;</button>
     <div style="margin-top:15px; text-align:center; font-size:11px;">
-      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline; font-weight:700;">&#9881; Set Backend URL</span>
+      <span onclick="openModal()" style="color:var(--blue); cursor:pointer; text-decoration:underline;">&#9881; Set Backend URL</span>
     </div>
   </div>
 </div>
 
 <div id="mainApp" style="display:none;flex-direction:column;height:100vh;">
   <div class="hdr">
-    <div style="font-family:'Syne',sans-serif;font-weight:800;display:flex;align-items:center;gap:8px;">
+    <div style="font-family:'Syne';font-weight:800;display:flex;align-items:center;gap:8px;">
         <div style="width:24px;height:24px;background:var(--blue);border-radius:5px;"></div> AI DevOps
     </div>
     <div style="display:flex; gap:12px; align-items:center;">
       <div class="status-pill"><div class="dot" id="dot"></div><span id="stxt">Offline</span></div>
       <button onclick="openModal()" style="cursor:pointer; background:none; border:none; font-size:18px;">&#x2699;</button>
-      <button onclick="doLogout()" style="cursor:pointer; color:var(--red); background:none; border:none; font-weight:700; font-size:12px;">LOGOUT</button>
+      <button onclick="doLogout()" style="cursor:pointer; color:var(--red); background:none; border:none; font-weight:700; font-size:11px;">LOGOUT</button>
     </div>
   </div>
   <div class="layout">
     <div class="lpanel">
         <div class="psec">
             <div class="plbl">Quick Tasks</div>
-            <div class="pi-item" onclick="quickFire('Show all running docker containers')">&#x1F433; Docker Status</div>
-            <div class="pi-item" onclick="quickFire('Check disk usage and system health')">&#x1F525; System Health</div>
-            <div class="pi-item" onclick="quickFire('List recent git commits')">&#x1F4DC; Git Log</div>
+            <div class="pi-item" onclick="fire('Check Docker status')">Docker Status</div>
+            <div class="pi-item" onclick="fire('Show system resources')">System Health</div>
         </div>
         <div style="padding:15px; flex:1; overflow-y:auto;">
             <div class="plbl">History</div>
@@ -106,12 +106,12 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.05);padding:
         <div class="msgs" id="msgs">
             <div id="welcome" style="padding:60px 20px; text-align:center;">
                 <h2 style="font-family:'Syne';margin-bottom:10px;">System Ready.</h2>
-                <p style="color:var(--text2); font-size:13px; max-width:300px; margin:0 auto;">Connected to: <br><code id="displayUrl">Not Configured</code></p>
+                <p style="color:var(--text2); font-size:12px;">Waiting for command...</p>
             </div>
         </div>
         <div class="inp-area">
             <div class="inp-wrap">
-                <textarea id="ui" placeholder="Type a command..." rows="1" oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+                <textarea id="ui" placeholder="Type a command..." rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
                 <button class="snd-btn" onclick="sendMsg()">&#x27A4;</button>
             </div>
         </div>
@@ -121,14 +121,11 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.05);padding:
 
 <div class="ovl" id="ovl">
   <div class="modal">
-    <h3 style="font-family:'Syne';margin-bottom:15px;">Configuration</h3>
-    <div class="lf">
-        <label>Ngrok / Backend URL</label>
-        <input type="text" id="backendUrl" placeholder="https://your-id.ngrok-free.app">
-    </div>
+    <h3>Configuration</h3>
+    <div class="lf" style="margin-top:15px;"><label>Backend URL</label><input type="text" id="backendUrl"></div>
     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-      <button onclick="closeModal()" style="padding:8px 16px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer;">Cancel</button>
-      <button onclick="saveUrl()" style="padding:8px 20px; border-radius:8px; border:none; background:var(--blue); color:white; cursor:pointer; font-weight:700;">Save Settings</button>
+      <button onclick="closeModal()">Cancel</button>
+      <button onclick="saveUrl()" style="background:var(--blue); color:white; border:none; padding:8px 20px; border-radius:6px;">Save</button>
     </div>
   </div>
 </div>
@@ -137,11 +134,10 @@ code{font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,0.05);padding:
 var BACKEND = localStorage.getItem('agent_backend') || '';
 var AUTH_TOKEN = localStorage.getItem('agent_token') || '';
 var HDR = { 'ngrok-skip-browser-warning': 'true' };
+var pendingPlan = null;
 
 function init() {
     document.getElementById('backendUrl').value = BACKEND;
-    document.getElementById('displayUrl').textContent = BACKEND || 'Not Configured';
-
     if (AUTH_TOKEN) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'flex';
@@ -157,125 +153,113 @@ function checkHealth() {
     const dot = document.getElementById('dot');
     const txt = document.getElementById('stxt');
     dot.className = 'dot checking';
-    txt.textContent = 'Connecting...';
-
     fetch(BACKEND + '/health', { headers: HDR })
-        .then(r => r.json())
-        .then(d => {
-            dot.className = 'dot on';
-            txt.textContent = 'Online';
-        })
-        .catch(e => {
-            dot.className = 'dot';
-            txt.textContent = 'Offline';
-        });
-}
-
-function doLogin() {
-    const u = document.getElementById('loginUser').value.trim();
-    const p = document.getElementById('loginPass').value.trim();
-    const err = document.getElementById('loginErr');
-
-    if (u === 'admin' && p === 'admin') {
-        loginSuccess('local-session');
-    } else {
-        fetch(BACKEND + '/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...HDR },
-            body: JSON.stringify({ username: u, password: p })
-        })
-        .then(r => r.json())
-        .then(d => {
-            if (d.token) loginSuccess(d.token);
-            else { err.textContent = 'Invalid Credentials'; err.style.display = 'block'; }
-        })
-        .catch(e => {
-            err.textContent = 'Backend unreachable. Try admin/admin';
-            err.style.display = 'block';
-        });
-    }
-}
-
-function loginSuccess(token) {
-    AUTH_TOKEN = token;
-    localStorage.setItem('agent_token', token);
-    init();
+        .then(r => r.json()).then(() => { dot.className = 'dot on'; txt.textContent = 'Online'; })
+        .catch(() => { dot.className = 'dot'; txt.textContent = 'Offline'; });
 }
 
 function sendMsg() {
     const inp = document.getElementById('ui');
     const txt = inp.value.trim();
-    if (!txt) return;
+    if (!txt || !BACKEND) return;
 
     document.getElementById('welcome').style.display = 'none';
     addMsg('user', txt);
-    
-    // Save to history
-    saveToHist(txt);
+    saveHist(txt);
+    inp.value = ''; inp.style.height = 'auto';
 
-    inp.value = '';
-    inp.style.height = 'auto';
+    const loadingId = addMsg('agent', 'Analyzing request...');
 
-    // Mock response (Replace with your actual /plan or /chat fetch)
-    setTimeout(() => {
-        addMsg('agent', "I've received your command: **" + txt + "**. Analyzing system state...");
-    }, 600);
+    // ACTUAL FETCH TO BACKEND /plan
+    fetch(BACKEND + '/plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AUTH_TOKEN, ...HDR },
+        body: JSON.stringify({ prompt: txt })
+    })
+    .then(r => r.json())
+    .then(data => {
+        updateMsg(loadingId, data.plan || data.message || "Plan generated.");
+        if (data.plan) {
+            pendingPlan = data.plan;
+            showExecButton(loadingId);
+        }
+    })
+    .catch(err => updateMsg(loadingId, "Error: Could not connect to backend."));
+}
+
+function executePlan(msgId) {
+    updateMsg(msgId, "Executing plan...");
+    fetch(BACKEND + '/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + AUTH_TOKEN, ...HDR },
+        body: JSON.stringify({ plan: pendingPlan })
+    })
+    .then(r => r.json())
+    .then(data => {
+        updateMsg(msgId, "Execution Complete:\n```\n" + (data.output || data.result || "Success") + "\n```");
+    })
+    .catch(err => updateMsg(msgId, "Execution failed."));
 }
 
 function addMsg(role, text) {
-    const container = document.getElementById('msgs');
+    const id = 'm-' + Date.now();
     const div = document.createElement('div');
     div.className = 'msg ' + role;
+    div.id = id;
     div.innerHTML = `<div class="bbl">${fmt(text)}</div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+    document.getElementById('msgs').appendChild(div);
+    const m = document.getElementById('msgs'); m.scrollTop = m.scrollHeight;
+    return id;
+}
+
+function updateMsg(id, text) {
+    const el = document.querySelector('#' + id + ' .bbl');
+    if (el) el.innerHTML = fmt(text);
+}
+
+function showExecButton(id) {
+    const el = document.getElementById(id);
+    const btn = document.createElement('button');
+    btn.className = 'exe-btn';
+    btn.innerText = 'Run Plan Now';
+    btn.onclick = () => executePlan(id);
+    el.appendChild(btn);
 }
 
 function fmt(t) {
     t = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     t = t.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
     t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
     return t.replace(/\n/g, '<br>');
 }
 
-function autoGrow(el) {
-    el.style.height = 'auto';
-    el.style.height = (el.scrollHeight) + 'px';
+function doLogin() {
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    if (u === 'admin' && p === 'admin') {
+        AUTH_TOKEN = 'local-dev';
+        localStorage.setItem('agent_token', AUTH_TOKEN);
+        init();
+    } else {
+        alert("Using default admin/admin for this build.");
+    }
 }
 
-function quickFire(cmd) {
-    document.getElementById('ui').value = cmd;
-    document.getElementById('ui').focus();
-    autoGrow(document.getElementById('ui'));
-}
-
-function saveToHist(t) {
-    let h = JSON.parse(localStorage.getItem('agent_hist') || '[]');
-    h.unshift({ txt: t, ts: Date.now() });
-    localStorage.setItem('agent_hist', JSON.stringify(h.slice(0, 15)));
+function fire(c) { document.getElementById('ui').value = c; document.getElementById('ui').focus(); }
+function saveHist(t) {
+    let h = JSON.parse(localStorage.getItem('agent_hist')||'[]');
+    h.unshift({txt:t}); localStorage.setItem('agent_hist', JSON.stringify(h.slice(0,10)));
     renderHist();
 }
-
 function renderHist() {
-    const el = document.getElementById('histList');
-    const h = JSON.parse(localStorage.getItem('agent_hist') || '[]');
-    el.innerHTML = h.map(item => `
-        <div class="pi-item" style="font-size:11px; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" onclick="quickFire('${item.txt.replace(/'/g, "\\'")}')">
-            ${item.txt}
-        </div>
-    `).join('');
+    const h = JSON.parse(localStorage.getItem('agent_hist')||'[]');
+    document.getElementById('histList').innerHTML = h.map(i => `<div class="pi-item" onclick="fire('${i.txt}')">${i.txt}</div>`).join('');
 }
-
-function saveUrl() {
-    let url = document.getElementById('backendUrl').value.trim().replace(/\/$/, '');
-    if (url && !url.startsWith('http')) url = 'https://' + url;
-    BACKEND = url;
-    localStorage.setItem('agent_backend', url);
-    init();
-    closeModal();
+function saveUrl() { 
+    BACKEND = document.getElementById('backendUrl').value.trim(); 
+    localStorage.setItem('agent_backend', BACKEND); 
+    closeModal(); init(); 
 }
-
 function openModal() { document.getElementById('ovl').classList.add('open'); }
 function closeModal() { document.getElementById('ovl').classList.remove('open'); }
 function doLogout() { localStorage.removeItem('agent_token'); location.reload(); }
