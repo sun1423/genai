@@ -331,7 +331,7 @@ function doLogin() {
   var p = document.getElementById('loginPass').value.trim();
   var err = document.getElementById('loginErr');
   if (!u || !p) { showErr(err, 'Enter username and password'); return; }
-  if (!BACKEND)  { showErr(err, 'Set backend URL first (link below)'); return; }
+  //if (!BACKEND)  { showErr(err, 'Set backend URL first (link below)'); return; }
 
   fetch(BACKEND + '/auth/login', { method: 'POST', headers: jHdr(), body: JSON.stringify({ username: u, password: p }) })
     .then(function(r) { return r.json(); })
