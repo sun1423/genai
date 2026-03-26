@@ -1,0 +1,34 @@
+name: Deploy to VM
+
+on:
+  push:
+    branches: [ main ] # Triggered whenever you push to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: SSH and Setup
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          script: |
+            # 1. Enter app directory (change this to your path)
+            mkdir -p ~/ai-app && cd ~/ai-app
+            
+            # 2. Sync files (if first time, you might need to git clone)
+            # For simplicity, we assume the code is already there or managed via git
+            
+            # 3. Create/Update the hidden .env file with your API key
+            echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
+            
+            # 4. Install dependencies and start/restart the server
+            npm install
+            # Use PM2 to keep the process alive after you logout
+            sudo npm install -g pm2
+            pm2 restart ai-server || pm2 start server.js --name "ai-server"
