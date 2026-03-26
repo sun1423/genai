@@ -8,13 +8,19 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
+// DEBUG: This will show in 'pm2 logs' if the key is actually loaded
+if (!process.env.OPENROUTER_KEY) {
+    console.error("❌ ERROR: OPENROUTER_KEY is not defined in environment variables!");
+} else {
+    console.log("✅ OPENROUTER_KEY is loaded.");
+}
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/api/analyze', async (req, res) => {
     const { text } = req.body;
-
     if (!text) return res.status(400).json({ error: "No text provided" });
 
     try {
@@ -23,18 +29,18 @@ app.post('/api/analyze', async (req, res) => {
             messages: [{ role: 'user', content: text }]
         }, {
             headers: {
+                // Ensure there is no space between 'Bearer' and the key if the key is missing
                 'Authorization': `Bearer ${process.env.OPENROUTER_KEY}`,
                 'Content-Type': 'application/json',
-                // OpenRouter specific headers (Required for some keys)
-                'HTTP-Referer': 'http://localhost:3000', 
+                'HTTP-Referer': 'http://localhost:3000',
                 'X-Title': 'VM AI Proxy'
             }
         });
         res.json(response.data);
     } catch (error) {
-        // Log the actual error response from OpenRouter to your VM console
-        console.error("OpenRouter Error Details:", error.response ? error.response.data : error.message);
-        res.status(500).json({ error: "OpenRouter Error: " + (error.response?.data?.error?.message || error.message) });
+        const errorMsg = error.response?.data?.error?.message || error.message;
+        console.error("OpenRouter Details:", errorMsg);
+        res.status(500).json({ error: "OpenRouter Error: " + errorMsg });
     }
 });
 
