@@ -1,4 +1,4 @@
-name: Deploy to VM
+name: Direct File Deploy
 
 on:
   push:
@@ -11,41 +11,28 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: SSH and Setup
+      - name: Copy Files to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          source: "server.js,index.html,package.json" # List your files here
+          target: "~/ai-app"
+
+      - name: Run App on VM
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_IP }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
-          # The '|' below allows for multi-line shell commands
           script: |
-            set -e
-            echo "Starting deployment..."
-            
-            # 1. Enter the application directory
-            mkdir -p ~/ai-app
             cd ~/ai-app
-
-            # 2. Handle the Git repository
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/${{ github.repository }}.git .
-            else
-              git fetch --all
-              git reset --hard origin/main
-            fi
-
-            # 3. Inject Environment Variables
+            
+            # Create the .env file with your key
             echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
             echo "PORT=3000" >> .env
 
-            # 4. Install Dependencies
+            # Install and Start
             npm install --production
-
-            # 5. Process Management
-            if pm2 list | grep -q "ai-server"; then
-              pm2 restart ai-server --update-env
-            else
-              pm2 start server.js --name "ai-server"
-            fi
-            
-            echo "Deployment successful."
+            pm2 restart ai-server || pm2 start server.js --name "ai-server"
