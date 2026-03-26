@@ -1,4 +1,4 @@
-name: Direct File Deploy
+name: Production Proxy Deploy
 
 on:
   push:
@@ -17,10 +17,10 @@ jobs:
           host: ${{ secrets.VM_IP }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
-          source: "server.js,index.html,package.json" # List your files here
+          source: "server.js,index.html,package.json"
           target: "~/ai-app"
 
-      - name: Run App on VM
+      - name: Inject Secrets and Start
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_IP }}
@@ -29,10 +29,12 @@ jobs:
           script: |
             cd ~/ai-app
             
-            # Create the .env file with your key
+            # Create .env from GitHub Secrets
             echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
-            echo "PORT=3000" >> .env
-
-            # Install and Start
+            echo "PORT=${{ secrets.PORT }}" >> .env
+            echo "UI_USERNAME=${{ secrets.UI_USERNAME }}" >> .env
+            echo "UI_PASSWORD=${{ secrets.UI_PASSWORD }}" >> .env
+            
+            # Install and Refresh Process
             npm install --production
-            pm2 restart ai-server || pm2 start server.js --name "ai-server"
+            pm2 restart ai-server --update-env || pm2 start server.js --name "ai-server"
