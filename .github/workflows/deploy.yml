@@ -1,28 +1,51 @@
-- name: SSH and Setup
+name: Deploy to VM
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: SSH and Setup
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VM_IP }}
           username: ${{ secrets.VM_USERNAME }}
           password: ${{ secrets.VM_PASSWORD }}
+          # The '|' below allows for multi-line shell commands
           script: |
-            # 1. Create directory if it doesn't exist
+            set -e
+            echo "Starting deployment..."
+            
+            # 1. Enter the application directory
             mkdir -p ~/ai-app
             cd ~/ai-app
 
-            # 2. Initialize git if not already there, otherwise pull latest
+            # 2. Handle the Git repository
             if [ ! -d ".git" ]; then
               git clone https://github.com/${{ github.repository }}.git .
             else
-              git pull origin main
+              git fetch --all
+              git reset --hard origin/main
             fi
 
-            # 3. Create/Update the secret .env file
+            # 3. Inject Environment Variables
             echo "OPENROUTER_KEY=${{ secrets.OPENROUTER_KEY }}" > .env
             echo "PORT=3000" >> .env
 
-            # 4. Install dependencies (now it will find package.json)
-            npm install
+            # 4. Install Dependencies
+            npm install --production
 
-            # 5. Start or Restart with PM2
-            # Use --update-env to ensure the new OPENROUTER_KEY is loaded
-            pm2 restart ai-server --update-env || pm2 start server.js --name "ai-server"
+            # 5. Process Management
+            if pm2 list | grep -q "ai-server"; then
+              pm2 restart ai-server --update-env
+            else
+              pm2 start server.js --name "ai-server"
+            fi
+            
+            echo "Deployment successful."
