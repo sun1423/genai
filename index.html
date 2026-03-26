@@ -1,48 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>AI Analysis Tool</title>
+    <title>Clean Chat</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 150px; margin-bottom: 15px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        button:hover { background: #218838; }
-        button:disabled { background: #6c757d; cursor: not-allowed; }
-        #output { background: #f8f9fa; padding: 15px; margin-top: 20px; border-radius: 4px; border-left: 5px solid #28a745; white-space: pre-wrap; font-family: monospace; }
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; }
+        #chatbox { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+        .user { color: blue; }
+        .ai { color: green; margin-bottom: 10px; }
+        .meta { font-size: 0.7em; color: #888; }
     </style>
 </head>
 <body>
-    <h3 style="text-align: center;">AI Text Processor</h3>
-    <textarea id="msg" placeholder="Paste your text here..."></textarea>
-    <button id="runBtn" onclick="send()">Process with AI</button>
-    <div id="output">Output will appear here...</div>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." style="width: 80%">
+    <button onclick="sendMessage()">Send</button>
 
     <script>
-        async function send() {
-            const out = document.getElementById('output');
-            const btn = document.getElementById('runBtn');
-            const text = document.getElementById('msg').value;
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatbox = document.getElementById('chatbox');
+            const message = input.value;
+            if (!message) return;
 
-            if(!text) return alert("Please enter some text!");
+            // Display User Message
+            chatbox.innerHTML += `<div class="user"><b>You:</b> ${message}</div>`;
+            input.value = '';
 
-            out.innerText = "Processing...";
-            btn.disabled = true;
-            
             try {
-                const response = await fetch('/api/analyze', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
+                    body: JSON.stringify({ message })
                 });
 
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || "Request failed");
-                out.innerText = data.choices[0].message.content;
+
+                // 🟢 DATA IS ALREADY CLEAN: Just use data.text
+                chatbox.innerHTML += `
+                    <div class="ai">
+                        <b>AI:</b> ${data.text}
+                        <div class="meta">Model: ${data.model} | Tokens: ${data.tokens}</div>
+                    </div>`;
+                
+                chatbox.scrollTop = chatbox.scrollHeight;
             } catch (err) {
-                out.innerText = "Error: " + err.message;
-            } finally {
-                btn.disabled = false;
+                chatbox.innerHTML += `<div style="color:red">Error connecting to server</div>`;
             }
         }
     </script>
